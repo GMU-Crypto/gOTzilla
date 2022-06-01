@@ -212,8 +212,14 @@ void poly_interp_network();
 
 int main()
 {
-    run_good_index(0);
+    // cout << "************Running goodindex************" <<  endl;
+    //run_good_index(0);
+    cout << "************Running oneofnot************" <<  endl;
+
     oneofnot();
+
+    cout << "************Running run_verifier_state************" <<  endl;
+
     run_verifier_state();
     //if (NETWORKING) {run_good_index_network(0);} else {run_good_index(0);} // fill in parameter with correct index
     //if (NETWORKING) {poly_interp_network();} else {oneofnot();}
@@ -228,15 +234,16 @@ void oneofnot() {
     uint64_t number_of_items = NUM_KEYS;
     cout << "Number of items: " << number_of_items << endl;
     //2^27 goal.
-    //uint64_t size_per_item = 1280; 
-    uint64_t size_per_item = 1600; // in bytes
+    uint64_t size_per_item = 1280; 
+    //uint64_t size_per_item = 1600; // in bytes
     //Yeah, we need 3 parties and 25 iterations. 
     //However, we only need to send m-1 shares per iteration as the last one can be recovered using y_i.
     // So each entry will have 2x25x256 bits = 1600 bytes
     
     //uint64_t size_per_item = 128; // in bytes
     cout << "Size per item: " << size_per_item << " bytes" << endl;
-    uint32_t N = LOG_NUM_KEYS < 20 ? 1024 : 2048; //degree polynomial for LWE
+    //uint32_t N = LOG_NUM_KEYS < 20 ? 1024 : 2048; //degree polynomial for LWE
+    uint32_t N = 1024;
     // for number_of_items = 2^24, N= 4096
     // number_of_items = 2^22, N= 2048
     // number_of_items = 2^12, N= 64
@@ -247,9 +254,12 @@ void oneofnot() {
     uint32_t d = 2;
 
     EncryptionParameters params(scheme_type::BFV);
+
     PirParams pir_params;
+
     gen_params(number_of_items, size_per_item, N, logt, d, params, pir_params);
-cout << "TEST"   << endl;
+            cout << "TEST"   << endl;
+
     auto time_create_db_s = high_resolution_clock::now();
     // Create test database
     auto db(make_unique<uint8_t[]>(number_of_items * size_per_item));
