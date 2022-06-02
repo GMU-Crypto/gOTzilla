@@ -23,6 +23,8 @@ target_link_libraries(gotzilla gmp gmpxx cryptopp)
 target_link_libraries(gotzilla ${CMAKE_CURRENT_SOURCE_DIR}/../SealPIR/libsealpir.a)
 target_link_libraries(gotzilla  ~/MP-SPDZ/libSPDZ.so ~/MP-SPDZ/libFHE.so)
 #include_directories( ${CMAKE_SOURCE_DIR} ~/MP-SPDZ ~/MP-SPDZ/local/lib ~/MP-SPDZ/mpir/ ~/SealPIR ~/SealPIR/bin /usr/local/include ~/cryptopp ~/SEAL/native/examples)
-include_directories( ${CMAKE_SOURCE_DIR} ~/MP-SPDZ ~/MP-SPDZ/local/lib ~/MP-SPDZ/mpir/ ~/SealPIR ~/SealPIR/bin /usr/local/include ~/cryptopp ~/SEAL/native/examples ~/MP-SPDZ/FHE)
+#include_directories( ${CMAKE_SOURCE_DIR} ~/MP-SPDZ ~/MP-SPDZ/local/lib ~/MP-SPDZ/mpir/ ~/SealPIR ~/SealPIR/bin /usr/local/include ~/cryptopp ~/SEAL/native/examples ~/MP-SPDZ/FHE)
+include_directories( ${CMAKE_SOURCE_DIR} ~/MP-SPDZ ~/MP-SPDZ/local/lib ~/MP-SPDZ/mpir/ ~/SealPIR ~/SealPIR/bin /usr/local/include)
+
 
 set(CMAKE_BUILD_TYPE DEBUG)

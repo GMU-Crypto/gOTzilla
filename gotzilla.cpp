@@ -256,9 +256,9 @@ void oneofnot() {
     EncryptionParameters params(scheme_type::BFV);
 
     PirParams pir_params;
+            cout << "TEST"   << endl;
 
     gen_params(number_of_items, size_per_item, N, logt, d, params, pir_params);
-            cout << "TEST"   << endl;
 
     auto time_create_db_s = high_resolution_clock::now();
     // Create test database

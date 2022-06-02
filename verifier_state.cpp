@@ -1,6 +1,6 @@
 #include "verifier_state.h"
 #include "constants.h"
-#include <osrng.h>
+#include <cryptopp/osrng.h>
 #include <chrono>
 #include <iostream> 
 #include <thread>

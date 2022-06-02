@@ -5,11 +5,11 @@
 #define VERIFIER_STATE_H
 #include "share_at.h"
 #include "constants.h"
-#include <cryptlib.h>
-#include <modes.h>
-#include <aes.h>
-#include <hmac.h>
-#include <sha.h>
+#include <cryptopp/cryptlib.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/hmac.h>
+#include <cryptopp/sha.h>
 
 void run_verifier_state();
 
