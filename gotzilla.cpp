@@ -212,8 +212,8 @@ void poly_interp_network();
 
 int main()
 {
-    // cout << "************Running goodindex************" <<  endl;
-    //run_good_index(0);
+    cout << "************Running goodindex************" <<  endl;
+    run_good_index(0);
     cout << "************Running oneofnot************" <<  endl;
 
     oneofnot();
@@ -243,7 +243,7 @@ void oneofnot() {
     //uint64_t size_per_item = 128; // in bytes
     cout << "Size per item: " << size_per_item << " bytes" << endl;
     //uint32_t N = LOG_NUM_KEYS < 20 ? 1024 : 2048; //degree polynomial for LWE
-    uint32_t N = 1024;
+    uint32_t N = 2048;
     // for number_of_items = 2^24, N= 4096
     // number_of_items = 2^22, N= 2048
     // number_of_items = 2^12, N= 64
