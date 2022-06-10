@@ -7,7 +7,7 @@ project(gOTzilla VERSION 3.2.0 LANGUAGES CXX)
 
 # Executable will be in ../bin
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/./bin)
-SET ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -O3 -march=core-avx2 -msse" )
+SET ( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++17 -O3 -m64 -lm -march=core-avx2 -msse2 -pthread")
 
 add_executable(gotzilla gotzilla.cpp good_index.cpp share_at.cpp verifier_state.cpp ~/SealPIR/pir.cpp pir_server.cpp ~/SealPIR/pir_client.cpp)
 

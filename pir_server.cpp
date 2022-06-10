@@ -8,7 +8,7 @@ using namespace std;
 using namespace seal;
 using namespace seal::util;
 
-#define NUM_THREADS 8
+#define NUM_THREADS 48
 
 PIRServer::PIRServer(const EncryptionParameters &params, const PirParams &pir_params) :
     params_(params), 
@@ -20,6 +20,7 @@ PIRServer::PIRServer(const EncryptionParameters &params, const PirParams &pir_pa
 }
 
 void PIRServer::preprocess_database() {
+    cout << "Running database preprocessing" << endl;
     if (!is_db_preprocessed_) {
 	auto f = [&](int i) {
 	    // Do Something
@@ -28,14 +29,17 @@ void PIRServer::preprocess_database() {
 	      db_->operator[](jdx), params_.parms_id());
 	  }
 	};
-	std::vector<std::thread> threads;
+	// std::vector<std::thread> threads;
+	std::vector<std::future<void>> threads;
 	for (int idx = 0; idx < NUM_THREADS; idx++) {
-	  std::thread t(f, idx);
-	  threads.emplace_back(std::move(t));
+	  // std::thread t(f, idx);
+	  // threads.emplace_back(std::move(t));
+	  threads.emplace_back(std::async(std::launch::async, f, idx));
 	}
 	
 	for (int idx = 0; idx < NUM_THREADS; idx++) {
-	  threads[idx].join();
+	  // threads[idx].join();
+	  threads[idx].wait();
 	}
 //         for (uint32_t i = 0; i < db_->size(); i++) {
 //             evaluator_->transform_to_ntt_inplace(
@@ -88,37 +92,92 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
     cout << "Server: elements packed into each plaintext " << ele_per_ptxt << endl; 
 
     uint32_t offset = 0;
-
+        vector<uint32_t> offsets(total, 0);
+    vector<uint64_t> processBytes(total, 0);
+    
+    vector<Plaintext> plaintexts(total);
+    
     for (uint64_t i = 0; i < total; i++) {
-
-        uint64_t process_bytes = 0;
-
-        if (db_size <= offset) {
-            break;
-        } else if (db_size < offset + bytes_per_ptxt) {
-            process_bytes = db_size - offset;
-        } else {
-            process_bytes = bytes_per_ptxt;
-        }
-
-        // Get the coefficients of the elements that will be packed in plaintext i
-        vector<uint64_t> coefficients = bytes_to_coeffs(logt, bytes.get() + offset, process_bytes);
-        offset += process_bytes;
-
-        uint64_t used = coefficients.size();
-
-        assert(used <= coeff_per_ptxt);
-
-        // Pad the rest with 1s
-        for (uint64_t j = 0; j < (N - used); j++) {
-            coefficients.push_back(1);
-        }
-
-        Plaintext plain;
-        vector_to_plaintext(coefficients, plain);
-        // cout << i << "-th encoded plaintext = " << plain.to_string() << endl; 
-        result->push_back(move(plain));
+      processBytes[i] = 0;
+      offsets[i] = offset;
+      if (db_size <= offset) {
+	  break;
+      } else if (db_size < offset + bytes_per_ptxt) {
+	  processBytes[i] = db_size - offset;
+      } else {
+	  processBytes[i] = bytes_per_ptxt;
+      }
+      offset += processBytes[i];
     }
+    
+    auto f = [&](int idx) {
+	// Do Something
+      for (int i = idx; i < total; i += NUM_THREADS) {
+	if (offsets[i] >= db_size) processBytes[i] = 0;
+	vector<uint64_t> coefficients = bytes_to_coeffs(logt, bytes.get() + offsets[i], processBytes[i]);
+
+	uint64_t used = coefficients.size();
+
+	assert(used <= coeff_per_ptxt);
+
+	// Pad the rest with 1s
+	for (uint64_t j = 0; j < (N - used); j++) {
+	    coefficients.push_back(1);
+	}
+
+	Plaintext plain;
+	vector_to_plaintext(coefficients, plain);
+	// cout << i << "-th encoded plaintext = " << plain.to_string() << endl; 
+	plaintexts[i] = (plain);
+  //       result->push_back(move(plain));
+      }
+    };
+    
+    std::vector<std::future<void>> threads;
+    for (int idx = 0; idx < NUM_THREADS; idx++) {
+// 	  std::thread t(f, idx);
+      threads.emplace_back(std::async(std::launch::async, f, idx));
+    }
+    
+    for (auto& t : threads) {
+      t.wait();
+    }
+    
+    for (uint64_t i = 0; i < total; i++) {
+      result->push_back(move(plaintexts[i]));
+    }
+    
+//     offset = 0;
+//     for (uint64_t i = 0; i < total; i++) {
+// 
+//         uint64_t process_bytes = 0;
+// 
+//         if (db_size <= offset) {
+//             break;
+//         } else if (db_size < offset + bytes_per_ptxt) {
+//             process_bytes = db_size - offset;
+//         } else {
+//             process_bytes = bytes_per_ptxt;
+//         }
+// 
+//         // Get the coefficients of the elements that will be packed in plaintext i
+//         vector<uint64_t> coefficients = bytes_to_coeffs(logt, bytes.get() + offsets[i], processBytes[i]);
+//         offset += process_bytes;
+// 
+//         uint64_t used = coefficients.size();
+// 
+//         assert(used <= coeff_per_ptxt);
+// 
+//         // Pad the rest with 1s
+//         for (uint64_t j = 0; j < (N - used); j++) {
+//             coefficients.push_back(1);
+//         }
+// 
+//         Plaintext plain;
+//         vector_to_plaintext(coefficients, plain);
+//         // cout << i << "-th encoded plaintext = " << plain.to_string() << endl; 
+//         result->push_back(move(plain));
+//     }
 
     // Add padding to make database a matrix
     uint64_t current_plaintexts = result->size();

@@ -242,13 +242,13 @@ void oneofnot() {
     
     //uint64_t size_per_item = 128; // in bytes
     cout << "Size per item: " << size_per_item << " bytes" << endl;
-    uint32_t N = 2048;
+    uint32_t N = 4096;
 
     // Recommended values: (logt, d) = (12, 2) or (8, 1). 
     uint32_t logt = 12; 
     uint32_t d = 2;
 
-    if (DEBUG == 0) std::cout.setstate(std::ios_base::failbit);
+    //if (DEBUG == 0) std::cout.setstate(std::ios_base::failbit);
 
     EncryptionParameters params(scheme_type::BFV);
 
@@ -350,7 +350,7 @@ ptr++;
         }
     }
 
-    if (DEBUG == 0) std::cout.clear();
+    //if (DEBUG == 0) std::cout.clear();
 
 
     cout << "Main: PIRServer pre-processing time: " << time_pre_us / 1000 << " ms" << endl;
