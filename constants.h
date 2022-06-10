@@ -9,7 +9,7 @@
 #define MIXED_STATEMENT 1
 
 /* Number of public key hashes in the disjunction */
-#define LOG_NUM_KEYS 24
+#define LOG_NUM_KEYS 16
 #define NUM_KEYS (1 << LOG_NUM_KEYS)
 
 /* Number of parties in the MPCitH proof */
@@ -29,6 +29,9 @@
 
 /* Commitment security parameter (key length in bytes)*/
 #define COMMIT_KEYLEN 16
+
+#define NETWORKING 0 
+#define PORT 12345
 
 
 #endif

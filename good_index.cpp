@@ -47,7 +47,6 @@ std::string gen_random2(const int len) {
 
 inline unsigned int to_uint(char ch)
 {
-    // EDIT: multi-cast fix as per David Hammen's comment
     return static_cast<unsigned int>(static_cast<unsigned char>(ch));
 }
 
@@ -68,7 +67,6 @@ void run_good_index_network(uint64_t ele_index) {
 
 void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
 
-    //uint64_t M = std::max((uint64_t)1024,num_items);
     uint64_t M = num_items; // TODO: check why prev line was in original code
     if (DEBUG) cout << "numbits(M) " << numBits(M) << endl;
 
@@ -114,7 +112,7 @@ void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
     FieldD.init(params.get_ring(), p);
     gfp::init_field(p);
 
-    cout << "Index proof prime: " << FieldD.get_prime() << "\t\tphi(m): " << FieldD.num_slots() << "\t\textra slack: " << extra_slack << endl;
+    if (DEBUG) cout << "Index proof prime: " << FieldD.get_prime() << "\t\tphi(m): " << FieldD.num_slots() << "\t\textra slack: " << extra_slack << endl;
     FHE_KeyPair keys(params, FieldD.get_prime());
     keys.generate(G);
 
@@ -132,11 +130,7 @@ void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
 
 
     // based on MP-SPDZ/FHEOffline/SimpleEncCommit.cpp-NonInteractiveProofSimpleEncCommit<FD>::generate_proof
-    //#ifndef LESS_ALLOC_MORE_MEM
-    Proof::Randomness r(proof.U, pk.get_params());
-    //#endif
-    //this->generate_ciphertexts(c, m, r, pk, timers, proof);
-    
+    Proof::Randomness r(proof.U, pk.get_params());    
 	    for (auto& mess : m) mess.randomize(G);
 	    m[0].assign_zero();
 	    m[0].set_element(row_index,1);
@@ -147,15 +141,12 @@ void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
 	    r.resize(proof.U, pk);
 	    for (unsigned i = 0; i < proof.U; i++)
 	    {
-        	//r[i].sample(G); //will need to save randomness b/w runs for verifiability
-	        //rc.assign(r[i]);
+         //will need to save randomness b/w runs for verifiability
 	        rc.generate(G);
 	        pk.encrypt(c[i], m.at(i), rc);
 	    }
     
-    //#ifndef LESS_ALLOC_MORE_MEM
     Prover<FFT_Data, Plaintext_<FFT_Data> > prover(proof, FieldD);
-    //#endif
     size_t prover_memory = prover.NIZKPoK(proof, ctxts, ptxts, pk, c, m, r);
     
     cout << "Bdd noise report_size " << prover_memory << endl;

@@ -1,6 +1,7 @@
 #include "pir_server.hpp"
 #include "pir_client.hpp"
 #include "Timer.h"
+#include "constants.h"
 #include <vector>
 #include <future>
 
@@ -8,7 +9,8 @@ using namespace std;
 using namespace seal;
 using namespace seal::util;
 
-#define NUM_THREADS 48
+const auto NUM_THREADS = std::thread::hardware_concurrency();
+
 
 PIRServer::PIRServer(const EncryptionParameters &params, const PirParams &pir_params) :
     params_(params), 
@@ -183,12 +185,6 @@ void PIRServer::set_database(const std::unique_ptr<const std::uint8_t[]> &bytes,
     uint64_t current_plaintexts = result->size();
     assert(current_plaintexts <= total);
 
-#ifdef DEBUG
-    cout << "adding: " << matrix_plaintexts - current_plaintexts
-         << " FV plaintexts of padding (equivalent to: "
-         << (matrix_plaintexts - current_plaintexts) * elements_per_ptxt(logtp, N, ele_size)
-         << " elements)" << endl;
-#endif
 
     vector<uint64_t> padding(N, 1);
 
