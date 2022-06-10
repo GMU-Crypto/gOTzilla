@@ -212,11 +212,13 @@ void poly_interp_network();
 
 int main()
 {
+    cout << "************Running oneofnot************" <<  endl;
+    
+    oneofnot(); 
+ 
     cout << "************Running goodindex************" <<  endl;
     run_good_index(0);
-    cout << "************Running oneofnot************" <<  endl;
 
-    oneofnot();
 
     cout << "************Running run_verifier_state************" <<  endl;
 
@@ -233,30 +235,24 @@ void oneofnot() {
 
     uint64_t number_of_items = NUM_KEYS;
     cout << "Number of items: " << number_of_items << endl;
-    //2^27 goal.
-    uint64_t size_per_item = 1280; 
-    //uint64_t size_per_item = 1600; // in bytes
+    uint64_t size_per_item = 1600; // in bytes
     //Yeah, we need 3 parties and 25 iterations. 
     //However, we only need to send m-1 shares per iteration as the last one can be recovered using y_i.
     // So each entry will have 2x25x256 bits = 1600 bytes
     
     //uint64_t size_per_item = 128; // in bytes
     cout << "Size per item: " << size_per_item << " bytes" << endl;
-    //uint32_t N = LOG_NUM_KEYS < 20 ? 1024 : 2048; //degree polynomial for LWE
     uint32_t N = 2048;
-    // for number_of_items = 2^24, N= 4096
-    // number_of_items = 2^22, N= 2048
-    // number_of_items = 2^12, N= 64
-    //N^d should be greater than number_of_items. 2^14?
 
     // Recommended values: (logt, d) = (12, 2) or (8, 1). 
     uint32_t logt = 12; 
     uint32_t d = 2;
 
+    if (DEBUG == 0) std::cout.setstate(std::ios_base::failbit);
+
     EncryptionParameters params(scheme_type::BFV);
 
     PirParams pir_params;
-            cout << "TEST"   << endl;
 
     gen_params(number_of_items, size_per_item, N, logt, d, params, pir_params);
 
@@ -265,7 +261,6 @@ void oneofnot() {
     auto db(make_unique<uint8_t[]>(number_of_items * size_per_item));
 
     //std::cout << typeid(db).name() << '\n';
-
     // Copy of the database. We use this at the end to make sure we retrieved
     // the correct element.
     auto db_copy(make_unique<uint8_t[]>(number_of_items * size_per_item));
@@ -319,8 +314,8 @@ ptr++;
     uint64_t ele_index = rd() % number_of_items; // element in DB at random position
     uint64_t index = client.get_fv_index(ele_index, size_per_item);   // index of FV plaintext
     uint64_t offset = client.get_fv_offset(ele_index, size_per_item); // offset in FV plaintext
-    cout << "Main: element index = " << ele_index << " from [0, " << number_of_items -1 << "]" << endl;
-    cout << "Main: FV index = " << index << ", FV offset = " << offset << endl; 
+    if (DEBUG) cout << "Main: element index = " << ele_index << " from [0, " << number_of_items -1 << "]" << endl;
+    if (DEBUG) cout << "Main: FV index = " << index << ", FV offset = " << offset << endl; 
 
     // Measure query generation
     auto time_query_s = high_resolution_clock::now();
@@ -329,15 +324,11 @@ ptr++;
     auto time_query_e = high_resolution_clock::now();
     auto time_query_us = duration_cast<microseconds>(time_query_e - time_query_s).count();
     
-    if (DEBUG) cout << "crash here?" << endl;
-
     // Measure query processing (including expansion)
     auto time_server_s = high_resolution_clock::now();
     PirReply reply = server.generate_reply(query, 0);
     auto time_server_e = high_resolution_clock::now();
     auto time_server_us = duration_cast<microseconds>(time_server_e - time_server_s).count();
-
-    if (DEBUG) cout << "crash here 2?" << endl;
 
     // Measure response extraction
     auto time_decode_s = chrono::high_resolution_clock::now();
@@ -358,6 +349,9 @@ ptr++;
             return;
         }
     }
+
+    if (DEBUG == 0) std::cout.clear();
+
 
     cout << "Main: PIRServer pre-processing time: " << time_pre_us / 1000 << " ms" << endl;
     cout << "Main: PIRClient query generation time: " << time_query_us / 1000 << " ms" << endl;
