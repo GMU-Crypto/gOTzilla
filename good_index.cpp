@@ -290,10 +290,7 @@ void good_index_network(uint64_t num_items, uint64_t row_index, uint64_t col_ind
 
 
     // based on MP-SPDZ/FHEOffline/SimpleEncCommit.cpp-NonInteractiveProofSimpleEncCommit<FD>::generate_proof
-    //#ifndef LESS_ALLOC_MORE_MEM
     Proof::Randomness r(proof.U, pk.get_params());
-    //#endif
-    //this->generate_ciphertexts(c, m, r, pk, timers, proof);
     
 	    for (auto& mess : m) mess.randomize(G);
 	    m[0].assign_zero();
@@ -311,9 +308,7 @@ void good_index_network(uint64_t num_items, uint64_t row_index, uint64_t col_ind
 	        pk.encrypt(c[i], m.at(i), rc);
 	    }
     
-    //#ifndef LESS_ALLOC_MORE_MEM
     Prover<FFT_Data, Plaintext_<FFT_Data> > prover(proof, FieldD);
-    //#endif
     size_t prover_memory = prover.NIZKPoK(proof, ctxts, ptxts, pk, c, m, r);
     
     cout << "Bdd noise report_size " << prover_memory << endl;
@@ -336,8 +331,6 @@ void good_index_network(uint64_t num_items, uint64_t row_index, uint64_t col_ind
     std::vector<unsigned char> pkt ;
     std::string temp ;
 
-    //std::string ctxts_ser;
-    //ctxts_ser = ctxts::str();
     uint32_t msgLength = rand_ctxts.length();
     //uint32_t sndMsgLength = htonl(msgLength); // Ensure network byte order
     std::cout << "(3) Sending ctexts..." << endl;

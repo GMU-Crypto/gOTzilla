@@ -167,8 +167,6 @@ void run_verifier_state() {
 
 void run_verifier_state_network() {
 
-
-
    //Setting up network socket - server role
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
@@ -242,7 +240,6 @@ void run_verifier_state_network() {
     std::vector<Integer> eps;
 
     if (DEBUG) std::cout << "Starting table allocation" << std::endl;
-    //byte y_shares[NUM_KEYS][NUM_ITERATION][NUM_PARTIES*H_OUT];
     byte ***y_shares  = (byte ***)malloc(NUM_KEYS * sizeof(byte **));
     if(y_shares == NULL) {
         std::cout << "Error allocating key-shares structure" << std::endl;
@@ -270,8 +267,6 @@ void run_verifier_state_network() {
     byte tape[PRNG_IN];//Set to true to generate random values (running out of entropy!)
     OS_GenerateRandomBlock(false, tape, PRNG_IN); //step 1 Fig6: generating seed
 
-
-
     //Server: send tape_commit
     byte tape_commit[HMAC<SHA256>::DIGESTSIZE]; //steps 1 Fig6: allocate space for C_s
     uint32_t msgLength = HMAC<SHA256>::DIGESTSIZE;
@@ -281,12 +276,9 @@ void run_verifier_state_network() {
     send(new_socket, tape_commit ,msgLength ,0); // Send the message data 
     std::cout << "() tape_commit sent." << std::endl;
 
+    //Client: receives view commitments
 
-
-    //Client: receive view commitments?
-
-
-    //Server: send commit_key (not need to send since we don't get reply back)
+    //Server: sends commit_key (not need to send since we don't get reply back)
     byte commit_key[COMMIT_KEYLEN]; //Server: send commit_key
     OS_GenerateRandomBlock(false, commit_key, COMMIT_KEYLEN); //step 1 Fig6: generating keys
 

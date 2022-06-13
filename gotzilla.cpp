@@ -50,7 +50,6 @@ using std::chrono::system_clock;
 
 inline unsigned int to_uint(char ch)
 {
-    // EDIT: multi-cast fix as per David Hammen's comment
     return static_cast<unsigned int>(static_cast<unsigned char>(ch));
 }
 
@@ -79,16 +78,16 @@ int main()
 {
     cout << "Number of elements: 2^" << LOG_NUM_KEYS << endl;
 
-    
-    run_verifier_state();
-    
-    oneofnot(); 
- 
-    run_good_index(0);
+    //Steps 1-4 of main protocol
+    if (NETWORKING) {run_verifier_state_network();} else {run_verifier_state();}    
 
-    //if (NETWORKING) {run_good_index_network(0);} else {run_good_index(0);} // fill in parameter with correct index
-    //if (NETWORKING) {poly_interp_network();} else {oneofnot();}
-    //if (NETWORKING) {run_verifier_state_network();} else {run_verifier_state();}
+    //Steps 5-6: 1-out-of-n OT construction based on PIR
+    //includes polynomial interpolation part from Pi_well-formed
+    if (NETWORKING) {poly_interp_network();} else {oneofnot();} 
+
+    //Bounded noise proof from Pi_well-formed
+    if (NETWORKING) {run_good_index_network(0);} else {run_good_index(0);}
+
     return 0;
 }
 
@@ -100,8 +99,8 @@ void oneofnot() {
     //E.g. for 3 parties and 25 iterations, each entry will have 2x25x256 bits = 1600 bytes
     
     if (DEBUG) cout << "Size per item: " << size_per_item << " bytes" << endl;
-    uint32_t N;
-    if (LOG_NUM_KEYS>20) {N = 4096;}
+    uint32_t N; //polynomial degree for LWE
+    if (LOG_NUM_KEYS>20) {N = 4096;} //should be greater than sqrt(number_of_items)
     else {N = 2048;}
     
     // Recommended values: (logt, d) = (12, 2) or (8, 1). 
@@ -208,7 +207,7 @@ void oneofnot() {
     if (DEBUG) cout << "Main: Reply num ciphertexts: " << reply.size() << endl;
 
 
-    //Polynomial interpolation test code
+    //Polynomial interpolation part from Pi_well-formed
     uint64_t modulus = (1 << 13) - 1;
     int degree = N-2; // = N-2 and is even
     int n = degree + 1;
@@ -303,19 +302,7 @@ void poly_interp_network() {
     }
 
 
-    //ctxts_ser = ctxts::str();
-    //uint32_t msgLength = ctxts.get_length();
-    //uint32_t sndMsgLength = htonl(msgLength); // Ensure network byte order
-    //std::cout << "(3) Sending ctexts..." << endl;
-    //send(new_socket,&sndMsgLength ,sizeof(uint32_t) ,0); // Send the message length
-    //send(new_socket,ctxts.serialize() ,msgLength ,0); // Send the message data 
-    //std::cout << "(3) Correctness test for ctexts:"  << ctxts.hash() << endl;
-
-
-
-
-
-    //Polynomial interpolation test code
+    //Polynomial interpolation 
     auto time_decode_polys = chrono::high_resolution_clock::now();
 
 
@@ -343,12 +330,8 @@ void poly_interp_network() {
     int n = degree + 1;
     int N2 = degree + 2;
     std::uniform_int_distribution<int> dist(0, N2);
-    
-    //cout << dist. << endl;
-    //std::cout << typeid(db).name() << '\n';
 
-    //long missing_index = ele_index;
-    long missing_index = rd() % degree; //Is this correct?
+    long missing_index = rd() % degree; 
     cout << "Missing index " << missing_index << endl;
     
     PolynomialWithFastVerification p(modulus, N2);
