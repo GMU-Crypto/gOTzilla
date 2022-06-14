@@ -11,18 +11,10 @@
 #include <cryptopp/hmac.h>
 #include <cryptopp/sha.h>
 
-void run_verifier_state();
+uint32_t run_verifier_state();
 
-void run_verifier_state_network();
 
 void verifier_state(CryptoPP::byte tape[PRNG_IN], 
-                    CryptoPP::byte **y, 
-                    std::vector<Integer> *eps, 
-     	            CryptoPP::byte commit_key[COMMIT_KEYLEN],
-                    CryptoPP::byte ***y_shares,
-                    CryptoPP::byte tape_commit[HMAC<SHA256>::DIGESTSIZE]);
-
-void verifier_state_network(CryptoPP::byte tape[PRNG_IN], 
                     CryptoPP::byte **y, 
                     std::vector<Integer> *eps, 
      	            CryptoPP::byte commit_key[COMMIT_KEYLEN],
