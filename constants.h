@@ -9,7 +9,7 @@
 #define MIXED_STATEMENT 1
 
 /* Number of public key hashes in the disjunction */
-#define LOG_NUM_KEYS 18
+#define LOG_NUM_KEYS 20
 #define NUM_KEYS (1 << LOG_NUM_KEYS)
 
 /* Number of parties in the MPCitH proof */

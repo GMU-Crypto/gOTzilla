@@ -75,17 +75,17 @@ int main()
     cout << "Number of elements: 2^" << LOG_NUM_KEYS << endl;
 
     //Steps 1-4 of main protocol
-    uint32_t a,b,c;
-    a = run_verifier_state();  
+    uint32_t time_a,time_b,time_c;
+    time_a = run_verifier_state()*2;  //Needs to be run by both prover and verifier
 
     //Steps 5-6: 1-out-of-n OT construction based on PIR
     //includes polynomial interpolation part from Pi_well-formed
-    b = oneofnot();
+    time_b = oneofnot();
 
     //Bounded noise proof from Pi_well-formed
-    c = run_good_index(0);
+    time_c = run_good_index(0);
 
-    cout << "Total: " << (a + b + c)/1000 << endl;
+    cout << "Total runtime: " << (time_a + time_b + time_c)/1000 << " ms" << endl;
     return 0;
 }
 
