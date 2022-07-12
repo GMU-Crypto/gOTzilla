@@ -161,6 +161,6 @@ uint32_t run_verifier_state() {
 
     auto time_post_verifier = high_resolution_clock::now();
     auto time_verifier_us = duration_cast<microseconds>(time_post_verifier - time_pre_verifier).count();
-    std::cout << "MPCitH encoding time (Verifier and Prover): " << time_verifier_us / 1000 <<  " ms" << std::endl;
+    std::cout << "MPCitH encoding time (both Prover and Verifier): " << time_verifier_us / 1000 <<  " ms" << std::endl;
     return time_verifier_us;
 }

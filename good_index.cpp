@@ -55,7 +55,7 @@ uint32_t run_good_index(uint64_t ele_index) {
     good_index(sqrt_N, ele_index / sqrt_N, ele_index % sqrt_N);
     auto time_post_index = high_resolution_clock::now();
     auto time_index_us = duration_cast<microseconds>(time_post_index - time_pre_index).count();
-    cout << "Well-formed query proof time: " << time_index_us / 1000 << endl;
+    cout << "PI-ZK-Well-Formed - Bounded noise: " << time_index_us / 1000 << endl;
     return time_index_us;
 }
 
@@ -144,10 +144,10 @@ void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
     Prover<FFT_Data, Plaintext_<FFT_Data> > prover(proof, FieldD);
     size_t prover_memory = prover.NIZKPoK(proof, ctxts, ptxts, pk, c, m, r);
     
-    cout << "Bdd noise report_size " << prover_memory << endl;
+    cout << "Bounded noise report_size " << prover_memory << endl;
     MemoryUsage mu;
     prover.report_size(CAPACITY, mu);
-    cout << "Bdd noise memory usage: " << endl;
+    cout << "Bounded noise memory usage: " << endl;
     mu.print();
 
     if (proof.top_gear)
@@ -157,7 +157,7 @@ void good_index(uint64_t num_items, uint64_t row_index, uint64_t col_index) {
             mm += mm;
     }
     
-    cout << "Bdd noise Communication " << (ctxts.get_length() + ptxts.get_length())/1024 << " kb" << endl;
+    cout << "Bounded noise Communication " << (ctxts.get_length() + ptxts.get_length())/1024 << " kb" << endl;
 
 }
 

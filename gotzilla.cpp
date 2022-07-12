@@ -198,10 +198,10 @@ uint32_t oneofnot() {
 
     if (DEBUG == 0) std::cout.clear();
 
-    cout << "PIRServer pre-processing time: " << time_pre_us / 1000 << " ms" << endl;
-    cout << "PIRClient query generation time: " << time_query_us / 1000 << " ms" << endl;
-    cout << "PIRServer reply generation time: " << time_server_us / 1000 << " ms" << endl;
-    cout << "PIRClient answer decode time: " << time_decode_us / 1000 << " ms" << endl;
+    cout << "PIRServer pre-processing (Prover and Verifier): " << time_pre_us / 1000 << " ms" << endl;
+    cout << "PIRClient Query (Prover): " << time_query_us / 1000 << " ms" << endl;
+    cout << "PIRServer Reply (Verifier): " << time_server_us / 1000 << " ms" << endl;
+    cout << "PIRClient Decode (Prover): " << time_decode_us / 1000 << " ms" << endl;
     if (DEBUG) cout << "Main: Reply num ciphertexts: " << reply.size() << endl;
 
 
@@ -232,7 +232,7 @@ uint32_t oneofnot() {
     auto time_decode_polye = chrono::high_resolution_clock::now();
     auto time_decode_polyus = duration_cast<microseconds>(time_decode_polye - time_decode_polys).count();
     if (DEBUG) cout << "Answer: " << answer << endl;
-    cout << "Polynomial interpolation time: " << time_decode_polyus / 1000 << " ms" << endl;
+    cout << "PI-ZK-Well-Formed - Polynomial interpolation: " << time_decode_polyus / 1000 << " ms" << endl;
  
     return (time_pre_us + time_query_us + time_server_us + time_decode_us);
 }
